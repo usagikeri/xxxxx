@@ -56,7 +56,7 @@ def dl_img(member_name, img_list):
     print('Complete')
 
 
-def jpeg_renam(member_name):
+def jpeg_rename(member_name):
     std, err = subprocess.Popen('pwd', stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE).communicate()
     pwd = std.decode('utf-8').rstrip('\n').rsplit('/', 1)[-1]
@@ -84,4 +84,4 @@ if __name__ == '__main__':
     max_page = page_get(url)
     imgurl_list = img_get(member_name, max_page)
     dl_img(member_name, imgurl_list)
-    jpeg_renam(member_name)
+    jpeg_rename(member_name)
