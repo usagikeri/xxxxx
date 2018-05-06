@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as bs
 import subprocess
-import shlex
 import string
 import time
 import random
@@ -27,7 +26,9 @@ def img_get(member_name, max_page):
         url = 'http://blog.nogizaka46.com/{}/?p={}'.format(member_name, i)
         response = requests.get(url, headers=headers)
         soup = bs(response.content, 'lxml')
-        imgurl_list += [i.attrs['src'] for i in soup.findAll('img') if i.attrs['src'].startswith('http://img.nogizaka46.com/blog')]
+        imgurl_list += [i.attrs['src'] for i in soup.findAll('img')
+                        if i.attrs['src'].startswith(
+                                'http://img.nogizaka46.com/blog')]
         time.sleep(0.5 + random.randint(1, 5)/10)
 
     return set(imgurl_list)
@@ -56,8 +57,9 @@ def dl_img(member_name, img_list):
 
 
 def jpeg_renam(member_name):
-    std, err = subprocess.Popen('pwd',stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-    pwd = std.decode('utf-8').rstrip('\n').rsplit('/',1)[-1]
+    std, err = subprocess.Popen('pwd', stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE).communicate()
+    pwd = std.decode('utf-8').rstrip('\n').rsplit('/', 1)[-1]
     if not pwd == member_name:
         os.chdir(member_name)
     file_list = os.listdir('.')
