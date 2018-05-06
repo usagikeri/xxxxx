@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup as bs
 import subprocess
 import shlex
+import string
 import time
 import random
 import sys
@@ -33,10 +34,26 @@ def img_get(member_name, max_page):
 
 
 def dl_img(member_name, img_list):
-    os.makedirs(member_name) 
+    os.makedirs(member_name, exist_ok=True)
     os.chdir(member_name)
-    commnnd = 'wget ' + ' '.join(img_list)
-    subprocess.call(shlex.split(commnnd))
+
+    print('Downloading...')
+    for img in img_list:
+        res = requests.get(img, stream=True)
+        if res.status_code == 200:
+            orgname = img.split('/')[-1]
+            random_string = generate_random_string() + '_'
+            while os.path.exists(random_string + orgname):
+                random_string = generate_random_string() + '_'
+
+            filename = random_string + orgname
+            with open(filename, 'wb') as f:
+                f.write(res.content)
+        else:
+            print('Error occurred while downloading image from {}'.format(img),
+                  file=sys.stderr)
+    print('Complete')
+
 
 def jpeg_renam(member_name):
     std, err = subprocess.Popen('pwd',stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
@@ -49,6 +66,15 @@ def jpeg_renam(member_name):
         if not i.endswith(('.jpeg', 'png', 'gif')):
             x, y = i.rsplit('.', 1)
             os.rename(i, y+x)
+
+
+def generate_random_string():
+    source_char = string.ascii_lowercase + string.digits
+    length = 30
+    random_string = ''.join([random.choice(source_char)
+                             for i in range(length)])
+    return random_string
+
 
 if __name__ == '__main__':
     url = 'http://blog.nogizaka46.com/{}'.format(member_name)
